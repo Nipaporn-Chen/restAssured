@@ -15,7 +15,6 @@ public class apiActivities {
                 .when()
                 .get("https://fakerestapi.azurewebsites.net/api/v1/Activities")
                 .then()
-                .assertThat()
                 .statusCode(200);
         System.out.println("Test verified, status code is 200 ok");//Optional
     }
