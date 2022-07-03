@@ -28,7 +28,6 @@ public class _02_LogInTypes {
     Map ==> Store key and value -->Hashmap implements Map, We can store different data type of Object
      */
 
-    //Using a Map
        @Test
     public void LoginWithMap(){
         RestAssured.baseURI="https://api.octoperf.com";
@@ -69,4 +68,5 @@ public class _02_LogInTypes {
                 .assertThat()
                 .statusCode(200);
     }
+    //Using ConfigurationReader.getproperty("username", "password")
 }

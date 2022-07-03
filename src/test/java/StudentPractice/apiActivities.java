@@ -40,9 +40,26 @@ public class apiActivities {
                 .assertThat().header("Content-Type", "application/json; charset=utf-8; v=1.0");
     }
     // TODO 1: Using Rest Assured validate the status code for endpoint /Activities/12
+    @Test
+    public void verifyStatusCode12(){
+        RestAssured.given()
+                .when()
+                .get("https://fakerestapi.azurewebsites.net/api/v1/Activities/12")
+                .then()
+                .statusCode(200);
+        System.out.println("Test verified, status code is 200 ok");//Optional
+    }
 
     // TODO 2: Using Rest Assured Validate Content-Type  is application/json; charset=utf-8; v=1.0
     // for endpoint /Activities/12
-
+    @Test
+    public void verifyContentType12(){
+        RestAssured.given()
+                .when()
+                .get("https://fakerestapi.azurewebsites.net/api/v1/Activities/12")
+                .then()
+                .assertThat().header("Content-Type", "application/json; charset=utf-8; v=1.0");
+        System.out.println("Test verified, status code is 200 ok");//Optional
+    }
 
 }

@@ -58,7 +58,10 @@ public class E2E_Project {
         //Verify status code
         Assert.assertEquals(SC_OK, response.statusCode());
         Assert.assertEquals("Default",response.jsonPath().getString("name[0]"));
-
         //TODO add tests for ID, userID, Description
+        Assert.assertEquals("OXlPv30BFcWANjCEt6zW", response.jsonPath().getString("id[0]"));
+        Assert.assertEquals("km5Lv30BNDV4RwLKqKrt", response.jsonPath().getString("userId[0]"));
+        Assert.assertEquals("", response.jsonPath().getString("description[0]"));
+
     }
 }
