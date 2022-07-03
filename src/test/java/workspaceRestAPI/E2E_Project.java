@@ -1,8 +1,10 @@
 package workspaceRestAPI;
 
+import com.sun.org.apache.xerces.internal.util.PropertyState;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.hamcrest.Matchers;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -10,13 +12,21 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.sun.org.apache.xerces.internal.util.PropertyState.is;
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class E2E_Project {
 
     public String path;
     String memberOf = "/workspaces/member-of";
+    Map<String, String> variables;
+    String Id;
+    String User_Id;
+    Response response;
+    String projectID;
 
     //What's a TestNG annotation that allows us to run Before each Test
 
@@ -45,9 +55,9 @@ public class E2E_Project {
     }
     //Write a test for API endpoint member-of
     @Test
-    public void verifyToken(){
+    public void memberOf(){
 
-    Response response = RestAssured.given()
+    response = RestAssured.given()
                 .header("Authorization",setupLogInAndToken()) //Sending authorization by using header
                 .when()
                 .get(memberOf)
@@ -66,5 +76,88 @@ public class E2E_Project {
         Assert.assertEquals("km5Lv30BNDV4RwLKqKrt", response.jsonPath().getString("userId[0]"));
         Assert.assertEquals("", response.jsonPath().getString("description[0]"));
 
+        //Save the id, so it can be used in other requests.
+        Id = response.jsonPath().get("id[0]");
+
+        //Save the userId, so it can be used in other requests.
+        User_Id = response.jsonPath().get("userId[0]");
+
+        //What can we use to Store data as Key and Value?
+        variables = new HashMap<String, String>();
+        variables.put("id", Id);
+        variables.put("userID", User_Id);
+
+//        Approach 1 to get Map key and value
+//        variables.forEach((key, value) -> System.out.println(key + " : " + value));
+//
+//        Approach 2 to get Map key and value
+//        for (Map.Entry<String,String> entry : variables.entrySet())
+//            System.out.println("Key = " + entry.getKey() +
+//                    ", Value = " + entry.getValue());
+
     }
+
+    @Test(dependsOnMethods = {"memberOf"})
+    public void createProject(){
+        String requestBody = "{\"id\":\"\",\"created\":\"2021-03-11T06:15:20.845Z\",\"lastModified\":\"2021-03-11T06:15:20.845Z\",\"userId\":\"" + variables.get("userID") + "\",\"workspaceId\":\"" + variables.get("id") + "\",\"name\":\"testing22\",\"description\":\"testing\",\"type\":\"DESIGN\",\"tags\":[]}";
+
+        response = RestAssured.given()
+                .header("Content-type", "application/json")
+                .header("Authorization", setupLogInAndToken())
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/design/projects")
+                .then()
+                .extract()
+                .response();
+        System.out.println(response.prettyPrint());
+
+        //TODO : Create TestNG Assertion Name, id, userId, and workspaceID
+        Assert.assertEquals("testing22", response.jsonPath().getString("name"));
+
+        //TODO : Create TestNG Assertion id, userId, and workspaceID
+
+        //Using hamcrest Matchers validation
+        assertThat(response.jsonPath().getString("name"), Matchers.is("testing22"));
+
+        //Store projectID(id) in a variable for future use.
+        projectID = response.jsonPath().get("id");
+        System.out.println("New id created when creating a project: " + projectID);
+    }
+
+    @Test(dependsOnMethods = {"memberOf","createProject"})
+    public void updateProject(){
+
+        String requestBody1 = "{\"created\":1615443320845,\"description\":\"TLAUpate\",\"id\":\"" + projectID + "\",\"lastModified\":1629860121757,\"name\":\"tlaAccounting firm\",\"tags\":[],\"type\":\"DESIGN\",\"userId\":\"" + variables.get("userID") + "\",\"workspaceId\":\"" + variables.get("id") + "}";
+
+        RestAssured.given()
+                .header("Content-type", "application/json")
+                .header("Authorization", setupLogInAndToken())
+                .and()
+                .body(requestBody1)
+                .when()
+                .put("/design/projects/"+projectID)
+                .then()
+                .extract()
+                .response();
+        System.out.println(response.prettyPeek());
+
+        //TODO : Homework add Assertions for id, name, type, userId, workspaceId, Status code, Content type
+
+    }
+    @Test(dependsOnMethods = {"memberOf","createProject, updateProject"})
+    public void deleteProject(){
+        RestAssured.given()
+                .header("Authorization", setupLogInAndToken())
+                .when()
+                .delete("/design/projects" + projectID)
+                .then()
+                .extract()
+                .response();
+
+        //TODO : Validate status code
+
+    }
+
 }
