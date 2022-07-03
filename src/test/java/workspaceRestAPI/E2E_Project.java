@@ -36,8 +36,8 @@ public class E2E_Project {
                 .accept(ContentType.JSON)
                 .post(path)//send request to end point
                 .then()
-                .statusCode(SC_OK) //verify status code = 200 or OK
-                .extract()  //method that extracts to response JSON data
+                .statusCode(SC_OK) //verify status code = 200 or OK by using interface class
+                .extract()  //method that extracts response JSON data
                 .body() //Body extracted as JSON format
                 .jsonPath()//Navigate using jsonPath
                 .get("token"); // get value for key token
@@ -48,16 +48,19 @@ public class E2E_Project {
     public void verifyToken(){
 
     Response response = RestAssured.given()
-                .header("Authorization",setupLogInAndToken())
+                .header("Authorization",setupLogInAndToken()) //Sending authorization by using header
                 .when()
                 .get(memberOf)
                 .then()
-                .log().all()
-                .extract().response();
+                .log().all() // Print all the log
+                .extract().response(); //Extracting the response
 
         //Verify status code
         Assert.assertEquals(SC_OK, response.statusCode());
+
+        //Verify the name
         Assert.assertEquals("Default",response.jsonPath().getString("name[0]"));
+
         //TODO add tests for ID, userID, Description
         Assert.assertEquals("OXlPv30BFcWANjCEt6zW", response.jsonPath().getString("id[0]"));
         Assert.assertEquals("km5Lv30BNDV4RwLKqKrt", response.jsonPath().getString("userId[0]"));
