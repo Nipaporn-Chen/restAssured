@@ -148,8 +148,6 @@ public class E2E_Project {
         assertThat(response.jsonPath().getString("workspaceId"), is("OXlPv30BFcWANjCEt6zW"));
         Assert.assertEquals(SC_OK,200);
 
-
-
     }
     @Test(dependsOnMethods = {"memberOf", "createProject", "updateProject"})
     public void deleteProject(){
