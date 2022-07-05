@@ -154,7 +154,7 @@ public class E2E_Project {
         response = RestAssured.given()
                 .header("Authorization", setupLogInAndToken())
                 .when()
-                .delete("/design/projects"+projectID)
+                .delete("/design/projects/"+ projectID)
                 .then()
                 .extract()
                 .response();
