@@ -1,6 +1,5 @@
 package workspaceRestAPI;
 
-import com.sun.org.apache.xerces.internal.util.PropertyState;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -12,8 +11,8 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.sun.org.apache.xerces.internal.util.PropertyState.is;
 import static io.restassured.RestAssured.given;
+import static org.apache.http.HttpStatus.SC_NO_CONTENT;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -119,7 +118,7 @@ public class E2E_Project {
         //TODO : Create TestNG Assertion id, userId, and workspaceID
 
         //Using hamcrest Matchers validation
-        assertThat(response.jsonPath().getString("name"), Matchers.is("testing22"));
+        assertThat(response.jsonPath().getString("name"), is("testing22"));
 
         //Store projectID(id) in a variable for future use.
         projectID = response.jsonPath().get("id");
@@ -129,10 +128,10 @@ public class E2E_Project {
     @Test(dependsOnMethods = {"memberOf","createProject"})
     public void updateProject(){
 
-        String requestBody1 = "{\"created\":1615443320845,\"description\":\"TLAUpate\",\"id\":\"" + projectID + "\",\"lastModified\":1629860121757,\"name\":\"tlaAccounting firm\",\"tags\":[],\"type\":\"DESIGN\",\"userId\":\"" + variables.get("userID") + "\",\"workspaceId\":\"" + variables.get("id") + "\"}";
+        String requestBody1 = "{\"created\":1615443320845,\"description\":\"TLAUpate\",\"id\":\"" + projectID + "\",\"lastModified\":1629860121757,\"name\":\"tlaAccounting firm1\",\"tags\":[],\"type\":\"DESIGN\",\"userId\":\"" + variables.get("userID") + "\",\"workspaceId\":\"" + variables.get("id") + "\"}";
 
-        RestAssured.given()
-                .header("Content-type", "application/json")
+        response = RestAssured.given()
+                .headers("Content-type", "application/json")
                 .header("Authorization", setupLogInAndToken())
                 .and()
                 .body(requestBody1)
@@ -144,20 +143,25 @@ public class E2E_Project {
         System.out.println(response.prettyPeek());
 
         //TODO : Homework add Assertions for id, name, type, userId, workspaceId, Status code, Content type
+        assertThat(response.jsonPath().getString("type"), is("DESIGN"));
+        assertThat(response.jsonPath().getString("userId"), is("km5Lv30BNDV4RwLKqKrt"));
+        assertThat(response.jsonPath().getString("workspaceId"), is("OXlPv30BFcWANjCEt6zW"));
+        Assert.assertEquals(SC_OK,200);
+
+
 
     }
-    @Test(dependsOnMethods = {"memberOf","createProject, updateProject"})
+    @Test(dependsOnMethods = {"memberOf", "createProject", "updateProject"})
     public void deleteProject(){
-        RestAssured.given()
+        response = RestAssured.given()
                 .header("Authorization", setupLogInAndToken())
                 .when()
-                .delete("/design/projects" + projectID)
+                .delete("/design/projects"+projectID)
                 .then()
                 .extract()
                 .response();
 
         //TODO : Validate status code
-
+        Assert.assertEquals(SC_NO_CONTENT,204);
     }
-
 }
