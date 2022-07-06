@@ -3,7 +3,6 @@ package workspaceRestAPI;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.hamcrest.Matchers;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -12,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static org.apache.http.HttpStatus.SC_NO_CONTENT;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -37,8 +35,8 @@ public class E2E_Project {
         path = "/public/users/login";
 
         Map<String, Object> map = new HashMap<String,Object>();
-        map.put("password", "xxxxx" );
-        map.put("username", "xxxxx");
+        map.put("password", "xxxxxx" );
+        map.put("username", "xxxxxx");
 
       return  given()
                 .queryParams(map)
@@ -109,6 +107,7 @@ public class E2E_Project {
                 .when()
                 .post("/design/projects")
                 .then()
+                .log().all()
                 .extract()
                 .response();
         System.out.println(response.prettyPrint());
@@ -139,15 +138,17 @@ public class E2E_Project {
                 .when()
                 .put("/design/projects/"+projectID)
                 .then()
+                .log().all()
                 .extract()
                 .response();
-        System.out.println(response.prettyPeek());
+        System.out.println("Project has been updated : " + projectID);
 
         //TODO : Homework add Assertions for id, name, type, userId, workspaceId, Status code, Content type
         assertThat(response.jsonPath().getString("type"), is("DESIGN"));
         assertThat(response.jsonPath().getString("userId"), is("km5Lv30BNDV4RwLKqKrt"));
         assertThat(response.jsonPath().getString("workspaceId"), is("OXlPv30BFcWANjCEt6zW"));
-        Assert.assertEquals(SC_OK,200);
+        assertThat(response.header("Content-Type"), is("application/json"));
+        assertThat(response.statusCode(), is(200));
 
 
     }
@@ -163,7 +164,6 @@ public class E2E_Project {
                 .response();
 
         //TODO : Validate status code
-        //Assert.assertEquals(SC_NO_CONTENT,204);
         assertThat(response.statusCode(), is(204));
     }
 }

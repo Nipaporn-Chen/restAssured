@@ -17,8 +17,8 @@ public class loginWithPojos {
     @Test
     public void loginWithPojosData(){
         loginPojos data = new loginPojos();
-        data.setPassword("xxxxx");
-        data.setUserName("xxxxx");
+        data.setPassword("HoneyHippo@2472#");
+        data.setUserName("amp6722.ja@gmail.com");
 
         RestAssured.baseURI = "https://api.octoperf.com";
         String path = "/public/users/login";
