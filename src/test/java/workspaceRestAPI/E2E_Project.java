@@ -28,6 +28,7 @@ public class E2E_Project {
     String projectID;
 
     //What's a TestNG annotation that allows us to run Before each Test
+    //BeforeMethods
 
     //Returning Token
     @BeforeTest
@@ -36,8 +37,8 @@ public class E2E_Project {
         path = "/public/users/login";
 
         Map<String, Object> map = new HashMap<String,Object>();
-        map.put("password", "HoneyHippo@2472#" );
-        map.put("username", "amp6722.ja@gmail.com");
+        map.put("password", "xxxxx" );
+        map.put("username", "xxxxx");
 
       return  given()
                 .queryParams(map)
@@ -148,6 +149,7 @@ public class E2E_Project {
         assertThat(response.jsonPath().getString("workspaceId"), is("OXlPv30BFcWANjCEt6zW"));
         Assert.assertEquals(SC_OK,200);
 
+
     }
     @Test(dependsOnMethods = {"memberOf", "createProject", "updateProject"})
     public void deleteProject(){
@@ -156,10 +158,12 @@ public class E2E_Project {
                 .when()
                 .delete("/design/projects/"+ projectID)
                 .then()
+                .log().all()
                 .extract()
                 .response();
 
         //TODO : Validate status code
-        Assert.assertEquals(SC_NO_CONTENT,204);
+        //Assert.assertEquals(SC_NO_CONTENT,204);
+        assertThat(response.statusCode(), is(204));
     }
 }
